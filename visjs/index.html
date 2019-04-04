@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!-- <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script> -->
+    <!-- <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css" /> -->
+</head>
+
+<style>
+    div {
+        border: 1px solid pink;
+    }
+
+    p {
+        font-size: 30px;
+        color: red;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+
+    <!-- 
+        使用方法：
+        1、引入插件test.js 设置id为testjs
+        2、id 为 div的id
+           type：list为表格，visual为可视化图
+           width:宽度
+           height:高度
+     -->
+    <p>集团</p>
+    <div id='d4'></div>
+    <p>拆单</p>
+    <div id="d5"></div>
+    <p>欺诈</p>
+    <div id="d6"></div>
+    <script src="./js/test.js?id=d4&type=visual&width=1000&height=800" id="testjs"></script>
+</body>
+
+</html>
