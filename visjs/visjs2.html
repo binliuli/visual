@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>visjs关系图-双击折叠展开子节点（隐藏显示子节点）</title>
+</head>
+
+<body>
+<div id="mynetwork" style="width: 100%;height: 100%;border: 1px solid lightgray;margin:0 auto;" >0</div>
+</body>
+
+<script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<link href="http://visjs.org/dist/vis.min.css" rel="stylesheet" type="text/css"/>
+<script>
+
+    var container = document.getElementById('mynetwork');
+    var network = null;
+    var newNodeArr = [];
+    var options;
+    var nodesArr = [];
+    var edgesArr = [];
+    var nodes_data;
+    var edges_data;
+    var connectedNum = '子节点数:';
+
+    $(function (){
+
+//        $('#mynetwork').bind("contextmenu", function(e){ return false; }); // 右键
+        // 高度响应式
+        clientHeight = document.documentElement.clientHeight;
+        clientWidth = document.documentElement.clientWidth;
+        $('#mynetwork').css('height',clientHeight-70);
+        $('#mynetwork').css('width',clientWidth-180);
+
+        var _mydata = {
+            "nodes":[
+                {"id":0,"assistId":0,"label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":0,"hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-674","y":"-716","hidden":false},
+                {"id":1,"assistId":1,"name":"网路","label":"网路","image":"http://visjs.org/examples/network/img/refresh-cl/System-Firewall-2-icon.png","shape":"image","pid":1,"hostType":"2","size":22,"isOurDraw":"false","x":"-86","y":"-287","hidden":false},
+                {"id":"1_0","assistId":"1_0","name":"网路","label":"网路","image":"http://visjs.org/examples/network/img/refresh-cl/System-Firewall-2-icon.png","shape":"image","pid":null,"hostType":"2","hostStatus":"1","size":22,"isOurDraw":"false","x":"-75","y":"51","hidden":false},
+                {"id":"1_0_0","assistId":"1_0_0","name":"网路","label":"网路","image":"http://visjs.org/examples/network/img/refresh-cl/System-Firewall-2-icon.png","shape":"image","pid":"1_0","hostType":"2","hostStatus":"1","size":22,"isOurDraw":"false","x":"-54","y":"455","hidden":false},
+                {"id":"1_0_0_0","assistId":"1_0_0_0","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"94","y":"340","hidden":false},
+                {"id":"1_0_0_1","assistId":"1_0_0_1","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-133","y":"641","hidden":false},
+                {"id":"1_0_0_2","assistId":"1_0_0_2","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-167","y":"439","hidden":false},
+                {"id":"1_0_0_3","assistId":"1_0_0_3","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"170","y":"447","hidden":false},
+                {"id":"1_0_0_4","assistId":"1_0_0_4","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"66","y":"435","hidden":false},
+                {"id":"1_0_0_5","assistId":"1_0_0_5","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-224","y":"576","hidden":false},
+                {"id":"1_0_0_6","assistId":"1_0_0_6","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-143","y":"540","hidden":false},
+                {"id":"1_0_0_7","assistId":"1_0_0_7","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-233","y":"374","hidden":false},
+                {"id":"1_0_0_8","assistId":"1_0_0_8","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-120","y":"348","hidden":false},
+                {"id":"1_0_0_9","assistId":"1_0_0_9","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-249","y":"476","hidden":false},
+                {"id":"1_0_0_10","assistId":"1_0_0_10","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"43","y":"532","hidden":false},
+                {"id":"1_0_0_11","assistId":"1_0_0_11","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-30","y":"662","hidden":false},
+                {"id":"1_0_0_12","assistId":"1_0_0_12","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"134","y":"533","hidden":false},
+                {"id":"1_0_0_13","assistId":"1_0_0_13","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-49","y":"576","hidden":false},
+                {"id":"1_0_0_14","assistId":"1_0_0_14","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-6","y":"333","hidden":false},
+                {"id":"1_0_0_15","assistId":"1_0_0_15","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"67","y":"622","hidden":false},
+                {"id":"1_0_1","assistId":"1_0_1","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-24","y":"-123","hidden":false},
+                {"id":"1_0_2","assistId":"1_0_2","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-191","y":"92","hidden":false},
+                {"id":"1_0_3","assistId":"1_0_3","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-227","y":"156","hidden":false},
+                {"id":"1_0_4","assistId":"1_0_4","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-280","y":"75","hidden":false},
+                {"id":"1_0_5","assistId":"1_0_5","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"129","y":"64","hidden":false},
+                {"id":"1_0_6","assistId":"1_0_6","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-169","y":"-25","hidden":false},
+                {"id":"1_0_7","assistId":"1_0_7","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-133","y":"160","hidden":false},
+                {"id":"1_0_8","assistId":"1_0_8","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-183","y":"-108","hidden":false},
+                {"id":"1_0_9","assistId":"1_0_9","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"66","y":"137","hidden":false},
+                {"id":"1_0_10","assistId":"1_0_10","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"101","y":"-35","hidden":false},
+                {"id":"1_0_11","assistId":"1_0_11","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"4","y":"-33","hidden":false},
+                {"id":"1_0_12","assistId":"1_0_12","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-33","y":"154","hidden":false},
+                {"id":"1_0_13","assistId":"1_0_13","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"39","y":"47","hidden":false},
+                {"id":"1_0_14","assistId":"1_0_14","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-126","y":"-127","hidden":false},
+                {"id":"1_0_15","assistId":"1_0_15","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":"1_0","hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-256","y":"-30","hidden":false},
+                {"id":"1_1","assistId":"1_1","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":null,"hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"93","y":"-399","hidden":false},
+                {"id":"1_2","assistId":"1_2","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":null,"hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-267","y":"-365","hidden":false},
+                {"id":"1_3","assistId":"1_3","label":"设备","image":"http://visjs.org/examples/network/img/refresh-cl/Hardware-Laptop-1-icon.png","shape":"image","pid":null,"hostType":"1","hostStatus":"1","size":15,"isOurDraw":"false","x":"-99","y":"-483","hidden":false}
+            ],
+            "edges":[
+                {"id":"1_0","from":1,"to":"1_0","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0","from":"1_0","to":"1_0_0","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_0","from":"1_0_0","to":"1_0_0_0","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_1","from":"1_0_0","to":"1_0_0_1","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_2","from":"1_0_0","to":"1_0_0_2","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_3","from":"1_0_0","to":"1_0_0_3","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_4","from":"1_0_0","to":"1_0_0_4","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_5","from":"1_0_0","to":"1_0_0_5","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_6","from":"1_0_0","to":"1_0_0_6","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_7","from":"1_0_0","to":"1_0_0_7","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_8","from":"1_0_0","to":"1_0_0_8","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_9","from":"1_0_0","to":"1_0_0_9","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_10","from":"1_0_0","to":"1_0_0_10","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_11","from":"1_0_0","to":"1_0_0_11","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_12","from":"1_0_0","to":"1_0_0_12","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_13","from":"1_0_0","to":"1_0_0_13","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_14","from":"1_0_0","to":"1_0_0_14","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_0_15","from":"1_0_0","to":"1_0_0_15","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_1","from":"1_0","to":"1_0_1","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_2","from":"1_0","to":"1_0_2","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_3","from":"1_0","to":"1_0_3","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_4","from":"1_0","to":"1_0_4","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_5","from":"1_0","to":"1_0_5","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_6","from":"1_0","to":"1_0_6","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_7","from":"1_0","to":"1_0_7","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_8","from":"1_0","to":"1_0_8","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_9","from":"1_0","to":"1_0_9","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_10","from":"1_0","to":"1_0_10","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_11","from":"1_0","to":"1_0_11","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_12","from":"1_0","to":"1_0_12","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_13","from":"1_0","to":"1_0_13","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_14","from":"1_0","to":"1_0_14","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_0_15","from":"1_0","to":"1_0_15","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_1","from":1,"to":"1_1","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_2","from":1,"to":"1_2","color":{"color":"#ccc"},"hidden":false},
+                {"id":"1_3","from":1,"to":"1_3","color":{"color":"#ccc"},"hidden":false}
+            ]
+        };
+        draw(_mydata);
+    });
+
+
+    function draw(data){
+        var  options = {
+            nodes : {
+                font:{
+                    color: "#888",
+                    size: 10
+                }
+            },
+            edges: {
+                smooth: false, //是否显示方向箭头
+                color: "#333" // 线条颜色
+            },
+            layout: {
+                improvedLayout:false
+            },
+            interaction: {
+                navigationButtons: true, // 如果为真，则在网络画布上绘制导航按钮。这些是HTML按钮，可以使用CSS完全自定义。
+                keyboard: {
+                    enabled: true,
+                    speed: {
+                        x: -1,
+                        y: -1,
+                        zoom: 0.02
+                    },
+                    bindToWindow: true
+                } // 启用键盘快捷键
+            },
+            physics: {
+                stabilization: false,
+                barnesHut: {
+                    centralGravity: 8, // 中心重力吸引器将整个网络拉回中心
+                    springLength: 80, // 边缘被建模为弹簧。这个弹簧长度是弹簧的剩余长度
+                    gravitationalConstant: -80000, // 重力吸引。我们喜欢排斥 所以价值是负数。如果你想要排斥力更强，减小值（所以-10000，-50000）。
+                    avoidOverlap: 0.2, // 接受范围：[0 .. 1]。当大于0时，会考虑节点的大小。该距离将由重力模型的节点的包围圆的半径计算。值1是最大重叠避免。
+                    damping: 0.3,
+                    springConstant: 0.5
+                },
+                minVelocity: 16 // 一旦达到所有节点的最小速度，我们假设网络已经稳定，仿真停止。
+            }
+        };
+
+        network = new vis.Network(container, data, options);
+        nodes_data = network.body.data.nodes;
+        edges_data = network.body.data.edges;
+
+        //动画稳定后的处理事件
+        var stabilizedTimer;
+        network.on("stabilized", function (params) { // 会调用两次？
+            window.clearTimeout(stabilizedTimer);
+            stabilizedTimer = setTimeout(function(){
+                exportNetworkPosition(network);
+                options.physics.enabled = false; // 关闭物理系统
+                network.setOptions(options);
+            },200);
+            console.log(11)
+        });
+
+        // 右键
+        network.on("oncontext",function(params){});
+
+        //选中节点
+        network.on("selectNode", function (params) {});
+
+        //单击节点
+        network.on("click", function (params) {});
+
+        //双击节点 隐藏或者显示子节点
+        network.on("doubleClick", function (params) {
+            if ( params.nodes.length != 0) { // 双击的是节点
+                var _node = params.nodes[0];
+                var _nodeName = nodes_data._data[_node].name;
+                var _allChild = getAllChilds(network,_node,[]);
+                if(_allChild.length > 0 ){ // 存在子节点
+                    if( nodes_data._data[_allChild[_allChild.length-1]].hidden == false){
+                        nodes_data.update([{id:_node,label:_nodeName + "  "+connectedNum+_allChild.length}]);
+                        for(var i=0;i<_allChild.length;i++){
+                            nodes_data.update([{id:_allChild[i], hidden:true}]);
+                            edges_data.update([{id:_allChild[i], hidden:true}]);
+                        }
+                    }else{
+                        nodes_data.update([{id:_node, label:_nodeName}]);
+                        for(var j=0;j<_allChild.length;j++){
+                            nodes_data.update([{id:_allChild[j], hidden:false}]);
+                            edges_data.update([{id:_allChild[j], hidden:false}]);
+                        }
+                    }
+                }
+            }
+        });
+
+        //拖动节点
+        network.on("dragging", function (params) {//拖动进行中事件
+            if (params.nodes.length != 0 ) {
+                nodeMoveFun(params);
+            }
+        });
+
+        //拖动结束后
+        network.on("dragEnd", function (params) {
+            if (params.nodes.length != 0 ) {
+                var arr = nodeMoveFun(params);
+                exportNetworkPosition(network,arr);
+            }
+        });
+
+        // 缩放
+        network.on("zoom", function (params) {});
+    }
+
+    /*
+     *获取所有子节点
+     * network ：图形对象
+     * _thisNode ：单击的节点（父节点）
+     * _Allnodes ：用来装子节点ID的数组
+     * */
+    function getAllChilds(network,_thisNode,_Allnodes){
+        var _nodes = network.getConnectedNodes(_thisNode,"to");
+        if(_nodes.length > 0){
+            for(var i=0;i<_nodes.length;i++){
+                getAllChilds(network,_nodes[i],_Allnodes);
+                _Allnodes.push(_nodes[i]);
+            }
+        }
+        return _Allnodes
+    };
+
+    // 节点移动
+    function nodeMoveFun(params){
+        var click_node_id = params.nodes[0];
+        var allsubidsarr = getAllChilds(network,click_node_id,[]); // 获取所有的子节点
+
+        if(allsubidsarr){ // 如果存在子节点
+            var positionThis = network.getPositions(click_node_id);
+            var clickNodePosition = positionThis[click_node_id]; // 记录拖动后，被拖动节点的位置
+            var position = JSON.parse(localStorage.getItem("position"));
+            var startNodeX,startNodeY; // 记录被拖动节点的子节点，拖动前的位置
+            var numNetx,numNety; // 记录被拖动节点移动的相对距离
+            var positionObj={}; // 记录移动的节点位置信息， 用于返回
+
+            positionObj[click_node_id] =  {x:clickNodePosition.x, y:clickNodePosition.y}; // 记录被拖动节点位置信息
+            numNetx = clickNodePosition.x - position[click_node_id].x; // 拖动的距离
+            numNety = clickNodePosition.y - position[click_node_id].y;
+
+            for(var j =0;j<allsubidsarr.length;j++){
+                if(position[allsubidsarr[j]]) {
+                    startNodeX = position[allsubidsarr[j]].x; // 子节点开始的位置
+                    startNodeY = position[allsubidsarr[j]].y;
+                    network.moveNode(allsubidsarr[j], (startNodeX + numNetx), (startNodeY + numNety)); // 在视图上移动子节点
+                    positionObj[allsubidsarr[j]] =  {x:(startNodeX + numNetx), y:(startNodeY + numNety)}; // 记录子节点位置信息
+                }
+            }
+        }
+        return positionObj;
+    };
+
+    /*
+     *节点位置设置
+     * network ：图形对象
+     * arr ：本次移动的节点位置信息
+     * */
+    function exportNetworkPosition(network,arr){
+        if(arr){ // 折叠过后  getPositions() 获取的位置信息里不包含隐藏的节点位置信息，这时候调用上次存储的全部节点位置，并修改这次移动的节点位置，最后保存
+            var localtionPosition = JSON.parse(localStorage.getItem("position"));
+            for(let index in arr ){
+                localtionPosition[index] = {
+                    x:arr[index].x,
+                    y:arr[index].y
+                }
+            }
+            setLocal(localtionPosition);
+
+        }else{
+            var position = network.getPositions();
+            setLocal(position);
+        }
+    };
+    //处理本地存储，这里仅仅只能作为高级浏览器使用，ie9以下不能处理
+    function setLocal(position) {
+        localStorage.removeItem("position");
+        localStorage.setItem("position",JSON.stringify(position));
+    }
+</script>
+</html>
