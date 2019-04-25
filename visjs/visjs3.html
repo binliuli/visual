@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Network | Basic usage</title>
+  <script type="text/javascript" src="http://visjs.org/dist/vis.js"></script>
+  <link href="http://visjs.org/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+
+  <style type="text/css">
+    #mynetwork {
+      width: 1000px;
+      height: 400px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="mynetwork"></div>
+
+  <script type="text/javascript">
+    // create an array with nodes
+    var nodes = new vis.DataSet([
+      { id: 1, label: 'Node 1', shape: 'circularImage', image: "./image/tel.png" },//设置 圆形 头像
+      { id: 2, label: 'Node 2' },
+      { id: 3, label: 'Node 3' },
+      { id: 4, label: 'Node 4' },
+      { id: 5, label: 'Node 5' }
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+      { from: 1, to: 3, label: '担保', title: 'dsjkdjksa' }, //label：关系  title:鼠标滑过展示title
+      { from: 3, to: 1, label: '客户', },
+      { from: 3, to: 1, label: '担保', },//点亮 红色
+      { from: 1, to: 2, },
+      { from: 2, to: 4 },
+      { from: 2, to: 5 }
+    ]);
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+      nodes: nodes,
+      edges: edges
+    };
+    var options = {
+      edges: {
+        font: { align: "middle" },//关系线上 文字对其方式 top/horizontal/bottom
+        shadow: true, //连接线阴影配置
+        smooth: true, //是否显示方向箭头
+        arrows: { to: true } ,//箭头指向from节点
+        color: { color: "rgba(30,30,30,0.6)", highlight: "red" } 
+      },
+      layout: {
+        improvedLayout: false //解决节点多，展示节点之间的关系
+      },
+      interaction: {
+        //鼠标经过改变样式
+        hover: true
+        //设置禁止缩放
+        //zoomView:false
+      },
+      nodes: {
+        shape: "dot",
+        size: 30,
+        color: {
+          background: "#fff"
+        },
+        font: {
+          size: 16
+        },
+        borderWidth: 1,
+        shadow: false
+      }
+    };
+    var network = new vis.Network(container, data, options);
+    let stabilizedTimer;
+
+    network.on("stabilized", function (params) {
+      window.clearTimeout(stabilizedTimer);
+      stabilizedTimer = setTimeout(function () {
+        options.physics.enabled = true; // 开启物理系统
+        network.setOptions(options);
+        // _this.loading = false;//监听 图绘制完 =》取消loading效果
+      }, 200);
+    });
+
+    network.on("dragEnd", function (params) {
+      if (params.nodes && params.nodes.length > 0) {
+        // false 拖拽之后固定位置
+        network.clustering.updateClusteredNode(params.nodes[0], { physics: false });
+      }
+    });
+
+    // 点击事件
+    network.on("click", function (params) {
+      const id = params.nodes;
+    });
+  </script>
+
+
+</body>
+
+</html>
